@@ -1,0 +1,9 @@
+# data & outputs
+dataset/
+
+
+# models
+*.pt
+
+.vscode
+
