@@ -162,11 +162,11 @@ def get_road_embedding_separate(
         indexes = torch.nonzero(route_assign_mat == road_id)
 
         gps_rep_list = [gps_road_joint_rep[index[0]][index[1]] for index in indexes]
-        gps_rep = torch.cat(gps_rep_list, dim=0)
+        gps_rep = torch.stack(gps_rep_list, dim=0)
         gps_road_embedding[road_id] = torch.mean(gps_rep, dim=0)
 
         route_rep_list = [route_road_joint_rep[index[0]][index[1]] for index in indexes]
-        route_rep = torch.cat(route_rep_list, dim=0)
+        route_rep = torch.stack(route_rep_list, dim=0)
         route_road_embedding[road_id] = torch.mean(route_rep, dim=0)
 
     gps_indexes = torch.nonzero(torch.sum(gps_road_embedding, dim=1) == 0)

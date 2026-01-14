@@ -47,7 +47,7 @@ def evaluation(city, exp_path, model_name, start_time):
     )
     print("edge_index shape:", edge_index.shape)
 
-    # load origin train data， this is trajectory data including route and gps
+    # load origin train data， trajectory data including route and gps
     # form of file, parquet loading is faster than pkl
     test_node_data = pd.read_parquet(
         "/home/harddisk/jxh/trajectory/JGRM/dataset/{}/{}_1101_1115_data_sample10w.parquet".format(
@@ -58,7 +58,7 @@ def evaluation(city, exp_path, model_name, start_time):
     print("number of road obervased in test data: {}".format(len(road_list)))
 
     # sample train data
-    num_samples = 5000  # 'all' or 50000
+    num_samples = "all"  # 'all' or 50000
     if num_samples == "all":
         pass
     elif isinstance(num_samples, int):
