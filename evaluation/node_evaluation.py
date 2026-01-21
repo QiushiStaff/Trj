@@ -58,7 +58,7 @@ def evaluation(city, exp_path, model_name, start_time):
     print("number of road obervased in test data: {}".format(len(road_list)))
 
     # sample train data
-    num_samples = "all"  # 'all' or 50000
+    num_samples = 500  # 'all' or 50000
     if num_samples == "all":
         pass
     elif isinstance(num_samples, int):
@@ -154,6 +154,10 @@ def evaluation(city, exp_path, model_name, start_time):
         # torch.save({"road_embedding": gps_road_embedding}, gps_road_path)
         # torch.save({"road_embedding": route_road_embedding}, route_road_path)
 
+    # task 2
+    print("task for speed pridict")
+    speed_inf.evaluation(road_embedding, feature_df)
+
     print("self task promt")
     # task self
     road_cls_prompt.evaluation(gps_road_embedding, route_road_embedding, feature_df)
@@ -165,9 +169,6 @@ def evaluation(city, exp_path, model_name, start_time):
     print("task 1")
     # task 1
     road_cls.evaluation(road_embedding_before, feature_df)
-
-    # task 2
-    speed_inf.evaluation(road_embedding, feature_df)
 
     end_time = time.time()
     print("cost time : {:.2f} s".format(end_time - start_time))

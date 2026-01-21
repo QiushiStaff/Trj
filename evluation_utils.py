@@ -774,14 +774,14 @@ def get_seq_emb_from_traj_withRouteOnly(seq_model, test_data, batch_size=1024):
 
     route_data, masked_route_assign_mat, _, _, route_assign_mat, _, _ = test_data
 
-    # 都放到显存里面放不下，需要分batch处理
     with torch.no_grad():
         route_traj_rep_list = []
         for i in range(
-            route_data.shape[0] // batch_size + 1
+            route_data.shape[0] // batch_size
         ):  # 最后不足batch_size的case不要了
             start_idx = i * batch_size
             end_idx = (i + 1) * batch_size
+
             if end_idx > route_data.shape[0]:
                 end_idx = None
             batch_route_data = route_data[start_idx:end_idx].cuda()

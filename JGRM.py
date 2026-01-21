@@ -37,7 +37,7 @@ class JGRMModel(BaseModel):
         self.node_embedding = nn.Embedding(vocab_size, road_embed_size)
         self.node_embedding.requires_grad_(True)
 
-        # time embedding 考虑加法, 保证 embedding size 一致
+        # time embedding 考虑加法, 保证 embedding size 一致，nn.Embedding 把词汇表中的每个单词，映射为一个向量，第一个参数就是词汇表的大小，第二个是向量维度
         self.minute_embedding = nn.Embedding(1440 + 1, route_embed_size)  # 0 是mask位
         self.week_embedding = nn.Embedding(7 + 1, route_embed_size)  # 0 是mask位
         self.delta_embedding = IntervalEmbedding(100, route_embed_size)  # -1 是mask位
@@ -87,6 +87,7 @@ class JGRMModel(BaseModel):
 
     def encode_graph(self, drop_rate=0.0):
         node_emb = self.node_embedding.weight
+        # 随机丢弃一些边，末尾的 [0] 表示只取处理后的新边索引
         edge_index = dropout_adj(self.edge_index, p=drop_rate)[0]
         node_enc = self.graph_encoder(node_emb, edge_index)
         return node_enc
