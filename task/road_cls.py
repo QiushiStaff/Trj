@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
 
 class Classifier(nn.Module):
@@ -20,25 +21,29 @@ class Classifier(nn.Module):
     def forward(self, x):
         return self.fc(x)
 
-def road_vis(x,y):
+
+def road_vis(x, y):
     # t-SNE 可视化
     X_std = StandardScaler().fit_transform(x.cpu())
     tsne = TSNE(n_components=2)
     X_tsne = tsne.fit_transform(X_std)
     X_tsne_data = np.vstack((X_tsne.T, y)).T
-    df_tsne = pd.DataFrame(X_tsne_data, columns=['1st_Component', '2nd_Component', 'class'])
+    df_tsne = pd.DataFrame(
+        X_tsne_data, columns=["1st_Component", "2nd_Component", "class"]
+    )
     plt.figure(figsize=(8, 8))
-    sns.scatterplot(data=df_tsne, hue='class', x='1st_Component', y='2nd_Component')
+    sns.scatterplot(data=df_tsne, hue="class", x="1st_Component", y="2nd_Component")
     plt.show()
+
 
 def evaluation(model, feature_df, fold=100):
     x = model
 
-    valid_labels = ['primary', 'secondary', 'tertiary', 'residential']
+    valid_labels = ["primary", "secondary", "tertiary", "residential"]
     id_dict = {idx: i for i, idx in enumerate(valid_labels)}
-    y_df = feature_df.loc[feature_df['highway'].isin(valid_labels)]
-    x = x[y_df['fid'].tolist()]
-    y = torch.tensor(y_df['highway'].map(id_dict).tolist())
+    y_df = feature_df.loc[feature_df["highway"].isin(valid_labels)]
+    x = x[y_df["fid"].tolist()]
+    y = torch.tensor(y_df["highway"].map(id_dict).tolist())
 
     split = x.shape[0] // fold
 
@@ -56,12 +61,12 @@ def evaluation(model, feature_df, fold=100):
         model = Classifier(x.shape[1], len(valid_labels)).cuda()
 
         if device_flag:
-            print('device: ', next(model.parameters()).device)
+            print("device: ", next(model.parameters()).device)
             device_flag = False
 
         opt = torch.optim.Adam(model.parameters(), lr=1e-2)
 
-        best_acc = 0.
+        best_acc = 0.0
         for e in range(1, 101):
             model.train()
             ce_loss = nn.CrossEntropyLoss()(model(x_train), y_train.cuda())
@@ -83,9 +88,11 @@ def evaluation(model, feature_df, fold=100):
     y_preds = torch.cat(y_preds, dim=0)
     y_trues = torch.cat(y_trues, dim=0)
 
-    macro_f1 = f1_score(y_trues, y_preds, average='macro')
-    micro_f1 = f1_score(y_trues, y_preds, average='micro')
-    print(f'road classification     | micro F1: {micro_f1:.4f}, macro F1: {macro_f1:.4f}')
+    macro_f1 = f1_score(y_trues, y_preds, average="macro")
+    micro_f1 = f1_score(y_trues, y_preds, average="micro")
+    print(
+        f"road classification     | micro F1: {micro_f1:.4f}, macro F1: {macro_f1:.4f}"
+    )
 
     # road_vis(x, y)
 
